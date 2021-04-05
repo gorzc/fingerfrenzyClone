@@ -1,0 +1,135 @@
+<html>
+<head>
+<style>
+
+	body {
+		text-align:center;
+		background:#eee;
+		padding-top:40px;
+		color:gray;
+	}
+
+	#letter {
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		margin:0 auto;
+		font-size:400px;
+		margin-bottom:50px;
+		width:500px;
+		background:#fff;
+		height:500px;
+	}
+
+	#info {
+		font-size:30px;
+		margin-bottom:50px;
+	}
+
+	#typed {
+		text-align:center;
+		display:none;
+		word-break:break-all;
+		margin: 0 auto;
+		min-height:25px;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		background:#fff;
+		padding:5px 8px;
+		font-size:20px;
+	}
+
+</style>
+</head>
+<body>
+	<div id="letter">
+		A
+	</div>
+	<div id="info">
+		Timer will start when you press key 'a'<br>Press space to restart
+	</div>
+	<div id="typed">
+	</div>
+<script>
+	(() => {
+		const letterBox = document.querySelector("#letter");
+		const info = document.querySelector("#info");
+		const typed = document.querySelector("#typed");
+		const letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+
+		let startTime = -1;
+		let counter;
+		let i = 0;
+
+		window.onkeydown = ev => {
+			const key = ev.key.toLowerCase();
+
+			if(!ev.isTrusted) {
+				document.querySelector("body").innerText ="HUIJAU";
+			}
+
+			if(letters[i] && key === letters[i]) {
+				if(i == 0) {
+					handleStart();
+				}
+
+				i += 1;
+
+				if(startTime != -1) {
+					const letter = document.createTextNode(key);
+					typed.appendChild(letter);
+				}
+
+				if(letters[i])
+					letterBox.textContent = letters[i].toUpperCase();
+				else {
+					handleCompletion();
+				}
+
+			}
+			else if(key == " ") {
+				handleRestart();
+			}
+			else if(letters.includes(key)) {
+				if(startTime != -1) {
+					handleMistake(key);
+				}
+			}
+		}
+
+		function handleStart() {
+			typed.style.display = "inline-block"
+			startTime = performance.now();
+			getTime();
+			counter = setInterval(getTime, 50);
+		}
+
+		function getTime() {
+			info.textContent = "Elapsed: " + ((performance.now() - startTime) / 1000).toFixed(2) + " seconds";
+		}
+
+		function handleCompletion() {
+			clearInterval(counter);
+			info.innerHTML = "Finished! Time: " + ((performance.now() - startTime) / 1000).toFixed(2) + " seconds<br>Press space to restart";
+			letterBox.textContent = ":)";
+			startTime = -1;
+		}
+
+		function handleRestart() {
+			i = 0;
+			startTime = -1;
+			letterBox.textContent = "A";
+			clearInterval(counter);
+			info.innerHTML = "Timer will start when you press key 'a'<br>Press space to restart";
+			typed.style.display = "none";
+			typed.textContent = "";
+		}
+
+		function handleMistake(key) {
+			const span = document.createElement("span");
+			span.style.color = "red";
+			span.textContent = key;
+			typed.appendChild(span);
+		}
+	})();
+
+</script>
+</body>
+</html>
