@@ -7,6 +7,7 @@
 		background:#eee;
 		padding-top:40px;
 		color:gray;
+		display:none;
 	}
 
 	#letter {
@@ -22,6 +23,7 @@
 	#info {
 		font-size:30px;
 		margin-bottom:50px;
+		text-shadow: 1px 1px 0 #fff;
 	}
 
 	#typed {
@@ -48,21 +50,29 @@
 	<div id="typed">
 	</div>
 <script>
+	document.body.style.display = "block";
 	(() => {
 		const letterBox = document.querySelector("#letter");
 		const info = document.querySelector("#info");
 		const typed = document.querySelector("#typed");
-		const letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+		const letters = [
+		"a", "b", "c", "d", "e", "f", 
+		"g", "h", "i", "j", "k", "l", 
+		"m", "n", "o", "p", "q", "r", 
+		"s", "t", "u", "v", "w", "x", 
+		"y", "z"];
 
 		let startTime = -1;
 		let counter;
 		let i = 0;
+		let checkText = "Timer will start when you press key 'a'";
+		let checker = setInterval(check, 50);
 
-		window.onkeydown = ev => {
-			const key = ev.key.toLowerCase();
+		window.onkeypress = e => {
+			const key = e.key.toLowerCase();
 
-			if(!ev.isTrusted) {
-				document.querySelector("body").innerText ="HUIJAU";
+			if(!e.isTrusted) {
+				document.body.textContent ="HUIJAU";
 			}
 
 			if(letters[i] && key === letters[i]) {
@@ -71,11 +81,13 @@
 				}
 
 				i += 1;
-
+/*
 				if(startTime != -1) {
 					const letter = document.createTextNode(key);
 					typed.appendChild(letter);
-				}
+				}*/
+
+				letterBox.style.color = "green";
 
 				if(letters[i])
 					letterBox.textContent = letters[i].toUpperCase();
@@ -89,25 +101,33 @@
 			}
 			else if(letters.includes(key)) {
 				if(startTime != -1) {
-					handleMistake(key);
+					//handleMistake(key);
+					letterBox.style.color = "red";
 				}
 			}
 		}
 
 		function handleStart() {
-			typed.style.display = "inline-block"
+			// typed.style.display = "inline-block";
 			startTime = performance.now();
 			getTime();
 			counter = setInterval(getTime, 50);
+			window.onkeyup = () => {
+				letterBox.style.color = "";
+			}
 		}
 
 		function getTime() {
-			info.textContent = "Elapsed: " + ((performance.now() - startTime) / 1000).toFixed(2) + " seconds";
+			checkText = "Elapsed: " + ((performance.now() - startTime) / 1000).toFixed(2) + " seconds";
+			info.textContent = checkText;
 		}
 
 		function handleCompletion() {
 			clearInterval(counter);
-			info.innerHTML = "Finished! Time: " + ((performance.now() - startTime) / 1000).toFixed(2) + " seconds<br>Press space to restart";
+			letterBox.style.color = "green";
+			window.onkeyup = "";
+			checkText = "Finished! Time: " + ((performance.now() - startTime) / 1000).toFixed(2) + " seconds";
+			info.innerHTML = checkText + "<br>Press space to restart";
 			letterBox.textContent = ":)";
 			startTime = -1;
 		}
@@ -115,21 +135,31 @@
 		function handleRestart() {
 			i = 0;
 			startTime = -1;
+			letterBox.style.color = "";
 			letterBox.textContent = "A";
 			clearInterval(counter);
-			info.innerHTML = "Timer will start when you press key 'a'<br>Press space to restart";
+			checkText = "Timer will start when you press key 'a'";
+			info.innerHTML = checkText + "<br>Press space to restart";
 			typed.style.display = "none";
 			typed.textContent = "";
 		}
+		/*
 
 		function handleMistake(key) {
 			const span = document.createElement("span");
 			span.style.color = "red";
 			span.textContent = key;
 			typed.appendChild(span);
+		}*/
+
+		function check() {
+			if(letterBox.nextElementSibling != info || info.textContent.indexOf(checkText) === -1 || info.getAttribute("style") !== null)
+				document.body.textContent = "huijau :D";
 		}
+
 	})();
 
 </script>
+
 </body>
 </html>
